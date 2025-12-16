@@ -19,7 +19,7 @@ public class NotificationService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper =
                     new MimeMessageHelper(message, true, "UTF-8");
-            String link = "macrotracker:///confirm?token=" + token;
+            String link = "macrotracker://confirm?token=" + token;
             String html = """
                     <p>Click the link to confirm your email:</p>
                     <p>
