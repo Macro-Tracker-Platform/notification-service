@@ -6,10 +6,13 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -39,6 +42,8 @@ public class NotificationService {
             mailSender.send(message);
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new RuntimeException("Failed to send email: " + subject, e);
+        } catch (MailException e) {
+            log.error("Failed to send email to {}. Reason: {}", to, e.getMessage());
         }
     }
 
