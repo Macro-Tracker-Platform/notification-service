@@ -22,8 +22,9 @@ public class FcmService {
     public void sendCacheInvalidation(CacheInvalidationEvent event) {
         FirebaseMessaging firebaseMessaging = firebaseMessagingProvider.getIfAvailable();
         if (!properties.isEnabled() || firebaseMessaging == null) {
-            log.debug("FCM disabled, skipping cache invalidation for userId={}",
-                    event.getUserId());
+            log.warn("FCM is disabled or unconfigured; "
+                            + "skipping cache invalidation for userId={} domain={}",
+                    event.getUserId(), event.getDomain());
             return;
         }
         try {
