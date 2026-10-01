@@ -2,6 +2,9 @@ databaseChangeLog:
   - changeSet:
       id: 01-create-push-notifications
       author: codex
+      # Preserve compatibility with installations that applied the original changeset.
+      validCheckSum:
+        - '9:00d9abeddad3423acb2cc41e3a2a3b8f'
       changes:
         - createTable:
             tableName: notification_preferences
@@ -47,6 +50,16 @@ databaseChangeLog:
             tableName: push_delivery_log
             columnNames: user_id, notification_type, local_date
             constraintName: uk_push_delivery_user_type_date
+  - changeSet:
+      id: 02-create-shedlock-if-missing
+      author: codex
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - not:
+            - tableExists:
+                tableName: shedlock
+      changes:
         - createTable:
             tableName: shedlock
             columns:
