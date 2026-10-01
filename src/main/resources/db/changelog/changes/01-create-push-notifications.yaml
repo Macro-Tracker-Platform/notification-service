@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 01-create-push-notifications
+      author: codex
+      changes:
+        - createTable:
+            tableName: notification_preferences
+            columns:
+              - column: { name: user_id, type: BIGINT, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: enabled, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: dinner_enabled, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: dinner_time, type: TIME, defaultValue: '20:30:00', constraints: { nullable: false } }
+              - column: { name: ai_limit_enabled, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: ai_limit_time, type: TIME, defaultValue: '08:30:00', constraints: { nullable: false } }
+              - column: { name: weekly_report_enabled, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: weekly_report_time, type: TIME, defaultValue: '09:00:00', constraints: { nullable: false } }
+              - column: { name: locale, type: VARCHAR(8), defaultValue: en, constraints: { nullable: false } }
+              - column: { name: time_zone, type: VARCHAR(64), defaultValue: UTC, constraints: { nullable: false } }
+              - column: { name: created_at, type: TIMESTAMP WITH TIME ZONE, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITH TIME ZONE, constraints: { nullable: false } }
+        - createTable:
+            tableName: push_devices
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: device_id, type: VARCHAR(128), constraints: { nullable: false, unique: true } }
+              - column: { name: fcm_token, type: VARCHAR(512), constraints: { nullable: false, unique: true } }
+              - column: { name: platform, type: VARCHAR(16), constraints: { nullable: false } }
+              - column: { name: active, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: created_at, type: TIMESTAMP WITH TIME ZONE, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITH TIME ZONE, constraints: { nullable: false } }
+        - createIndex:
+            tableName: push_devices
+            indexName: idx_push_devices_user_active
+            columns:
+              - column: { name: user_id }
+              - column: { name: active }
+        - createTable:
+            tableName: push_delivery_log
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: notification_type, type: VARCHAR(32), constraints: { nullable: false } }
+              - column: { name: local_date, type: DATE, constraints: { nullable: false } }
+              - column: { name: sent_at, type: TIMESTAMP WITH TIME ZONE, constraints: { nullable: false } }
+        - addUniqueConstraint:
+            tableName: push_delivery_log
+            columnNames: user_id, notification_type, local_date
+            constraintName: uk_push_delivery_user_type_date
+        - createTable:
+            tableName: shedlock
+            columns:
+              - column: { name: name, type: VARCHAR(64), constraints: { primaryKey: true, nullable: false } }
+              - column: { name: lock_until, type: TIMESTAMP(3), constraints: { nullable: false } }
+              - column: { name: locked_at, type: TIMESTAMP(3), constraints: { nullable: false } }
+              - column: { name: locked_by, type: VARCHAR(255), constraints: { nullable: false } }
